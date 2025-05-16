@@ -17,7 +17,6 @@
 static const char *host_dir = "/it24_host";
 static const char *log_path = "/var/log/it24.log";
 
-// Logging function
 void write_log(const char *action, const char *path) {
     FILE *log_file = fopen(log_path, "a");
     if (log_file) {
@@ -30,7 +29,6 @@ void write_log(const char *action, const char *path) {
     }
 }
 
-// Check for dangerous files
 bool is_dangerous_file(const char *filename) {
     char *lower = strdup(filename);
     for (int i = 0; lower[i]; i++) lower[i] = tolower(lower[i]);
@@ -40,7 +38,6 @@ bool is_dangerous_file(const char *filename) {
     return dangerous;
 }
 
-// Reverse filename
 char* reverse_filename(const char *filename) {
     char *reversed = strdup(filename);
     int len = strlen(reversed);
@@ -52,7 +49,6 @@ char* reverse_filename(const char *filename) {
     return reversed;
 }
 
-// ROT13 encryption
 void rot13(char *str) {
     for (int i = 0; str[i]; i++) {
         if (isalpha(str[i])) {
@@ -62,7 +58,6 @@ void rot13(char *str) {
     }
 }
 
-// FUSE operations
 static int antink_getattr(const char *path, struct stat *stbuf) {
     char fullpath[PATH_MAX];
     snprintf(fullpath, PATH_MAX, "%s%s", host_dir, path);
@@ -136,7 +131,6 @@ static struct fuse_operations antink_oper = {
 };
 
 int main(int argc, char *argv[]) {
-    // Initialize log file
     FILE *log = fopen(log_path, "a");
     if (log) {
         fprintf(log, "=== AntiNK Started ===\n");
