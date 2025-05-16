@@ -1,36 +1,30 @@
 version: '3'
 
 services:
-  # Container utama yang menjalankan FUSE filesystem
   antink-server:
     build: .
     container_name: antink-server
-    privileged: true  # Diperlukan untuk FUSE
+    privileged: true  
     cap_add:
       - SYS_ADMIN
     devices:
-      - /dev/fuse:/dev/fuse  # Akses ke FUSE device
+      - /dev/fuse:/dev/fuse  
     security_opt:
       - apparmor:unconfined
     volumes:
-      # Mount direktori host ke dalam container
       - ./it24_host:/it24_host:ro
-      # Mount point untuk filesystem FUSE
       - ./antink_mount:/antink_mount:shared
-      # Mount direktori untuk logs
       - ./antink-logs:/var/log:rw
     networks:
       - antink-network
     restart: unless-stopped
 
-  # Container untuk monitoring log secara real-time
   antink-logger:
     image: ubuntu:20.04
     container_name: antink-logger
     depends_on:
       - antink-server
     volumes:
-      # Share log directory dengan container server
       - ./antink-logs:/var/log:ro
     command: >
       bash -c "apt-get update && apt-get install -y tail && 
