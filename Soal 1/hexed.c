@@ -7,7 +7,7 @@
 
 #define ZIP_FILE "anomali.zip"
 #define FILE_URL "https://drive.usercontent.google.com/u/0/uc?id=1hi_GDdP51Kn2JJMw02WmCOxuc3qrXzh5&export=download"
-#define UNZIP_FOLDER "unzipped"
+#define EXTRACT_FOLDER "anomali"
 #define IMAGE_DIR "image"
 #define LOG_FILE "conversion.log"
 
@@ -33,39 +33,33 @@ void generate_output_filename(char *output_path, size_t size, const char *basena
              ext);
 }
 
-void log_conversion(const char *text_filename, const char *image_filename, struct tm *t) {
+void log_conversion(const char *basename, const char *image_filename, struct tm *t) {
     FILE *log = fopen(LOG_FILE, "a");
     if (log) {
-        fprintf(log,
-                "[%04d-%02d-%02d][%02d:%02d:%02d]: Successfully converted hexadecimal text %s to %s.\n",
+        fprintf(log, "[%04d-%02d-%02d][%02d:%02d:%02d]: Successfully converted hexadecimal text %s to %s.\n",
                 t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
                 t->tm_hour, t->tm_min, t->tm_sec,
-                text_filename, image_filename);
+                basename, image_filename);
         fclose(log);
     }
 }
 
-void process_hex_file(const char *filename) {
-    char full_path[256];
-    snprintf(full_path, sizeof(full_path), "%s/%s", UNZIP_FOLDER, filename);
-
-    FILE *in = fopen(full_path, "r");
-    if (!in) return;
-
-    create_directory(IMAGE_DIR);
+void convert_hex_file(const char *filepath, const char *basename) {
+    FILE *in = fopen(filepath, "r");
+    if (!in) {
+        perror("Failed to open hex file");
+        return;
+    }
 
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
-
-    char basename[100];
-    strncpy(basename, filename, strrchr(filename, '.') - filename);
-    basename[strrchr(filename, '.') - filename] = '\0';
 
     char output_path[512];
     generate_output_filename(output_path, sizeof(output_path), basename, "png", t);
 
     FILE *out = fopen(output_path, "wb");
     if (!out) {
+        perror("Failed to create image file");
         fclose(in);
         return;
     }
@@ -78,45 +72,58 @@ void process_hex_file(const char *filename) {
 
     fclose(in);
     fclose(out);
-    log_conversion(filename, strrchr(output_path, '/') + 1, t);
+
+    log_conversion(basename, strrchr(output_path, '/') + 1, t);
+    printf("[✔] Image saved as: %s\n", output_path);
 }
 
 int main() {
-    printf("[1] Mengunduh file zip...\n");
-    char cmd[512];
-    snprintf(cmd, sizeof(cmd), "wget -q -O %s \"%s\"", ZIP_FILE, FILE_URL);
-    if (system(cmd) != 0) {
-        fprintf(stderr, "Gagal download.\n");
+    printf("[1] Downloading zip file using wget...\n");
+    char download_cmd[512];
+    snprintf(download_cmd, sizeof(download_cmd), "wget -q -O %s \"%s\"", ZIP_FILE, FILE_URL);
+    if (system(download_cmd) != 0) {
+        fprintf(stderr, "Failed to download file.\n");
         return 1;
     }
 
-    printf("[2] Mengekstrak file zip...\n");
-    create_directory(UNZIP_FOLDER);
-    snprintf(cmd, sizeof(cmd), "unzip -o %s -d %s > /dev/null", ZIP_FILE, UNZIP_FOLDER);
-    if (system(cmd) != 0) {
-        fprintf(stderr, "Gagal unzip.\n");
+    printf("[2] Extracting zip file to 'anomali/'...\n");
+    create_directory(EXTRACT_FOLDER);
+    char unzip_cmd[256];
+    snprintf(unzip_cmd, sizeof(unzip_cmd), "unzip -j -o %s -d %s > /dev/null", ZIP_FILE, EXTRACT_FOLDER);
+    if (system(unzip_cmd) != 0) {
+        fprintf(stderr, "Failed to unzip file.\n");
         return 1;
     }
 
-    printf("[3] Menghapus file zip...\n");
+    printf("[3] Deleting zip file...\n");
     remove(ZIP_FILE);
 
-    printf("[4] Konversi semua file hex...\n");
-    DIR *dir = opendir(UNZIP_FOLDER);
+    printf("[4] Converting all hex .txt files in 'anomali/' to images...\n");
+    create_directory(IMAGE_DIR);
+
+    DIR *dir = opendir(EXTRACT_FOLDER);
     if (!dir) {
-        perror("Gagal buka direktori unzip");
+        perror("Failed to open target folder");
         return 1;
     }
 
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
-        if (strstr(entry->d_name, ".txt")) {
-            process_hex_file(entry->d_name);
+        if (entry->d_type == DT_REG && strstr(entry->d_name, ".txt")) {
+            char filepath[512];
+            snprintf(filepath, sizeof(filepath), "%s/%s", EXTRACT_FOLDER, entry->d_name);
+
+            char basename[256];
+            strncpy(basename, entry->d_name, strcspn(entry->d_name, "."));
+            basename[strcspn(entry->d_name, ".")] = '\0';
+
+            printf("Converting %s...\n", entry->d_name);
+            convert_hex_file(filepath, basename);
         }
     }
 
     closedir(dir);
+    printf("[✔] All files converted successfully.\n");
 
-    printf("[✔] Semua file berhasil dikonversi dan dicatat di conversion.log.\n");
     return 0;
 }
