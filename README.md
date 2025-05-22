@@ -10,6 +10,130 @@
 
 ## Soal No 1
 
+🧩 Konversi Hexadecimal ke Gambar PNG
+
+Program ini ditulis dalam bahasa C dan berfungsi untuk:
+
+- 📥 Mengunduh file ZIP dari Google Drive
+- 📂 Mengekstrak file `.txt` yang berisi data string hexadecimal
+- 🖼️ Mengonversi isi file `.txt` menjadi file gambar `.png`
+- 📁 Menyimpan hasil gambar ke dalam folder `image/`
+- 📝 Mencatat seluruh aktivitas konversi ke file log `conversion.log`
+
+---
+
+## 📁 Struktur Direktori
+
+.
+├── anomali.zip # File ZIP hasil unduhan
+├── anomali/ # Folder hasil ekstraksi
+│ ├── 1.txt
+│ ├── 2.txt
+│ └── ...
+├── image/ # Hasil file PNG
+│ ├── 1_image_2025-05-22_21:55:12.png
+│ └── ...
+├── conversion.log # Log hasil konversi
+└── program.c # Source code program
+
+yaml
+Salin
+Edit
+
+---
+
+## 🔍 Penjelasan Fungsi
+
+### `create_directory(const char *name)`
+Membuat folder jika belum ada (misal: `anomali/`, `image/`).
+
+---
+
+### `parse_byte(char h, char l)`
+Menggabungkan 2 karakter hex (`h`, `l`) menjadi 1 byte.
+
+Contoh:
+```c
+parse_byte('4', '1'); // menghasilkan 0x41
+generate_filename(...)
+Membuat nama file PNG dengan format:
+
+css
+Salin
+Edit
+[nama_file]_image_[YYYY-mm-dd]_[HH:MM:SS].png
+log_conversion(...)
+Mencatat log konversi ke file conversion.log dalam format:
+
+css
+Salin
+Edit
+[YYYY-MM-DD][HH:MM:SS]: Successfully converted hexadecimal text 1.txt to 1_image_2025-05-22_21:55:12.png.
+convert_file(...)
+Fungsi utama konversi:
+
+Membaca file .txt karakter demi karakter
+
+Mengubah setiap 2 karakter hex menjadi 1 byte
+
+Menyimpan byte ke file .png
+
+Menulis log konversi
+
+🧠 Alur Program main()
+🔽 Download ZIP
+
+bash
+Salin
+Edit
+wget -q -O anomali.zip "<URL>"
+🗃️ Ekstrak File ZIP
+
+bash
+Salin
+Edit
+unzip -j -o anomali.zip -d anomali/
+🧹 Hapus File ZIP
+
+bash
+Salin
+Edit
+remove("anomali.zip");
+🔄 Proses Semua .txt
+
+Buka direktori anomali/
+
+Konversi semua file .txt menjadi .png
+
+Simpan di image/
+
+Catat ke conversion.log
+
+🚀 Cara Menjalankan
+1. Kompilasi Program
+bash
+Salin
+Edit
+gcc program.c -o hex_converter
+2. Jalankan Program
+bash
+Salin
+Edit
+./hex_converter
+3. Hasil Akhir
+Gambar .png berada di folder image/
+
+Log konversi tercatat di conversion.log
+
+📝 Catatan Tambahan
+Folder anomali/ dan image/ dibuat otomatis jika belum ada
+
+Nama file gambar disesuaikan dengan timestamp agar unik
+
+Program ini cocok untuk kebutuhan forensik, ekstraksi data, atau rekonstruksi file berbasis hex
+
+```
+
 ## Soal No 2
 
 ## Soal No 3
