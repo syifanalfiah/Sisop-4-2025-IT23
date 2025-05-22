@@ -341,5 +341,11 @@ docker-compose down
 untuk menghapus container.
 
 ### Dokumentasi
+![image](https://github.com/user-attachments/assets/60b1fea9-d16e-440a-b021-2bd038e516e5)
+![image](https://github.com/user-attachments/assets/338143a6-50e9-4248-9ff7-022cad63bbec)
+![image](https://github.com/user-attachments/assets/025b40fc-7a99-4e0c-ad06-ff38c2d15837)
+![image](https://github.com/user-attachments/assets/4eb332c8-0b0c-482e-8161-ac6a98c690ca)
+![image](https://github.com/user-attachments/assets/c8e7ee83-8022-479f-bf8b-4a6228bed8f2)
+![image](https://github.com/user-attachments/assets/07c5bd2d-2b70-4fce-aee6-1505ed29e797)
 
 ## Soal No 4
