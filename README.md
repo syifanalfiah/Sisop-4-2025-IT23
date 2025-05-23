@@ -144,7 +144,7 @@ Pada soal ini, diminta untuk mengimplementasikan sistem file virtual menggunakan
 
 Kode ditulis dalam bahasa C menggunakan library **FUSE3**, dengan struktur utama sebagai berikut:
 
-#### **2.1. Inisialisasi dan Parsing Opsi**
+#### **1.1. Inisialisasi dan Parsing Opsi**
 
 ```c
 struct baymax_config {
