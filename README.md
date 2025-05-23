@@ -136,12 +136,6 @@ Program ini cocok untuk kebutuhan forensik, ekstraksi data, atau rekonstruksi fi
 
 ## Soal No 2
 
-Tentu, berikut laporan resmi (lapres) yang disusun sesuai struktur dan gaya yang Anda tunjukkan:
-
----
-
-## **Soal No 2 - Sistem File Virtual BaymaxFS**
-
 Pada soal ini, diminta untuk mengimplementasikan sistem file virtual menggunakan FUSE (Filesystem in Userspace). Sistem file ini bertujuan untuk merekonstruksi file legendaris `Baymax.jpeg` yang telah terpecah menjadi 14 bagian kecil, masing-masing berukuran maksimal 1 KB, dan disimpan dalam folder `relics/`. File utuh harus muncul sebagai satu file yang dapat dibaca dan disalin dari direktori mount, tanpa mengubah potongan aslinya.
 
 ---
