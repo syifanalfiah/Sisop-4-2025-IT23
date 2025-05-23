@@ -136,6 +136,134 @@ Program ini cocok untuk kebutuhan forensik, ekstraksi data, atau rekonstruksi fi
 
 ## Soal No 2
 
+Tentu, berikut laporan resmi (lapres) yang disusun sesuai struktur dan gaya yang Anda tunjukkan:
+
+---
+
+## **Soal No 2 - Sistem File Virtual BaymaxFS**
+
+Pada soal ini, diminta untuk mengimplementasikan sistem file virtual menggunakan FUSE (Filesystem in Userspace). Sistem file ini bertujuan untuk merekonstruksi file legendaris `Baymax.jpeg` yang telah terpecah menjadi 14 bagian kecil, masing-masing berukuran maksimal 1 KB, dan disimpan dalam folder `relics/`. File utuh harus muncul sebagai satu file yang dapat dibaca dan disalin dari direktori mount, tanpa mengubah potongan aslinya.
+
+---
+
+### **1. Struktur dan Fungsionalitas Kode**
+
+Kode ditulis dalam bahasa C menggunakan library **FUSE3**, dengan struktur utama sebagai berikut:
+
+#### **2.1. Inisialisasi dan Parsing Opsi**
+
+```c
+struct baymax_config {
+    const char *relics_dir;
+    const char *log_path;
+};
+```
+
+* Opsi `-orelics=…` menentukan lokasi fragmen.
+* Opsi `-ologfile=…` menentukan file log aktivitas.
+* Digunakan `fuse_opt_parse` untuk mem-parsing argumen ini.
+
+---
+
+#### **1.2. Logging Aktivitas**
+
+```c
+static void log_activity(const char *fmt, ...) {
+    // Menulis timestamp dan aktivitas (READ, WRITE, dsb) ke file log.
+}
+```
+
+Setiap aksi penting (READ, WRITE, DELETE) ditulis ke `activity.log` dengan format waktu yang jelas.
+
+---
+
+#### **1.3. Callback Utama FUSE**
+
+##### **getattr()**
+
+```c
+static int baymax_getattr(const char *path, struct stat *st, ...)
+```
+
+* Mengembalikan metadata direktori `/` atau file virtual seperti `Baymax.jpeg`.
+* Ukuran file dihitung sebagai total semua fragment `.000`–`.013`.
+
+##### **readdir()**
+
+```c
+static int baymax_readdir(...) 
+```
+
+* Menampilkan direktori virtual.
+* Menyaring prefix unik dari file pecahan di `relics/` dan hanya menampilkan nama file gabungannya.
+
+##### **open()**
+
+```c
+static int baymax_open(...) 
+```
+
+* Memastikan file virtual `Baymax.jpeg` dapat dibuka jika fragmen `.000` ditemukan.
+* Mencatat aktivitas READ ke log.
+
+##### **read()**
+
+```c
+static int baymax_read(...) 
+```
+
+* Membaca potongan-potongan fragmen secara berurutan dari `relics/`.
+* Menghormati offset dan batas `size` agar tidak membaca berlebih.
+* File dibaca seolah merupakan satu file utuh.
+
+---
+
+### **3. Struktur File dan Contoh Kasus**
+
+Direktori kerja:
+
+```
+.
+├── baymax         <- binary FUSE
+├── baymax.c       <- source code utama
+├── relics/        <- berisi Baymax.jpeg.000 sampai Baymax.jpeg.013
+├── mount_dir/     <- mount point untuk file virtual
+└── activity.log   <- log aktivitas
+```
+
+### **1.4. Permasalahan dan Penyelesaian**
+
+Percobaan awal:
+
+```bash
+./baymax -orelics=relics -ologfile=activity.log mount_dir/
+ls mount_dir/
+```
+
+> **Output:** *kosong* — tidak ada file yang tampil.
+> Harusnya muncul `Baymax.jpeg`.
+
+---
+
+Untuk soal nomor 2 ini, lapres ini adalah menjelaskan kode setelah revisi. **NAMUN**, setelah revisi juga tetap **tidak tersolve** karena masih error hingga sekarang.
+
+Apa errornya? Mulai dari awal saja, jika saya melakukan:
+
+```bash
+ls mount_dir
+```
+
+tidak menghasilkan apa-apa, hingga beberapa kali saya sudah merevisi ini. Mulai dari `Baymax.jpeg` yang ketika di-`open` tidak menunjukkan apa-apa dan malah error hingga sekarang.
+
+---
+
+### **1.5. Kesimpulan**
+
+Kode BaymaxFS ini telah mengimplementasikan fitur baca file virtual dari fragmen. Namun hingga saat laporan ini dibuat, **fungsi `readdir()` tetap gagal menampilkan nama file virtual**, menyebabkan direktori mount selalu kosong.
+Sehingga, **soal ini masih belum terselesaikan secara penuh**.
+
+---
+
 ## Soal No 3
 
 ### Deskripsi
@@ -473,3 +601,11 @@ untuk menghapus container.
 ![image](https://github.com/user-attachments/assets/07c5bd2d-2b70-4fce-aee6-1505ed29e797)
 
 ## Soal No 4
+
+---
+
+Saya tidak mengerjakan soal nomor 4 karena waktu saya sudah habis untuk menyelesaikan soal nomor 2 yang sampai sekarang masih belum berhasil.
+
+Awalnya saya berencana mengerjakan soal 2 dan 4, tapi karena nomor 2 tidak selesai-selesai dan terus mengalami error pada bagian mount maupun pembacaan file, saya akhirnya fokus penuh ke sana dan meninggalkan soal nomor 4. Walau pada akhirnya KEDUANYA tidak solve.
+
+---
